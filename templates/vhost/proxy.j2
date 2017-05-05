@@ -1,0 +1,12 @@
+  ## Proxy
+{% if item['proxy_host'] %}
+  <Proxy *>
+{% for y in item['proxy_orders'] %}
+    {{ y }}
+{% endfor %}
+  </Proxy>
+
+{% for y in item['proxy_options'] %}
+  {{ y }}
+{% endfor %}
+{% endif %}
