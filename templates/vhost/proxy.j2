@@ -1,102 +1,33 @@
-{% if item['proxy_dest'] or item['proxy_pass'] or item.['proxy_pass_match'] or item['proxy_dest_match'] -%}
-
-  ## Proxy rules
+  ## Proxy Rules
   ProxyRequests Off
-{%- endif -%}
-{% if item['proxy_preserve_host'] -%}
+
+{% if item['proxy_preserve_host'] is defined and item['proxy_preserve_host'] == 'On' -%}
   ProxyPreserveHost On
-{% else -%}
+{%- else %}
   ProxyPreserveHost Off
-{%- endif -%}
-{%- if item['proxy_add_headers'] is defined -%}
-  {%- if item['proxy_add_headers'] -%}
+{%- endif %}
+
+{% if item['proxy_add_headers'] is defined and item['proxy_add_headers'] == 'On' -%}
   ProxyAddHeaders On
-  {%- else -%}
+{%- else %}
   ProxyAddHeaders Off
-  {%- endif -%}
-{%- endif -%}
-{% if item['proxy_error_override'] -%}
+{%- endif %}
+
+{% if item['proxy_error_override'] is defined -%}
   ProxyErrorOverride On
-{%- endif -%}
-{#
-<%- [@proxy_pass].flatten.compact.each do |proxy| -%>
-  <%- Array(proxy['no_proxy_uris']).each do |uri| -%>
-  ProxyPass <%= uri %> !
-  <%- end -%>
-  <%- Array(proxy['no_proxy_uris_match']).each do |uri| -%>
-  ProxyPassMatch <%= uri %> !
-  <%- end -%>
-  ProxyPass <%= proxy['path'] %> <%= proxy['url'] -%>
-  <%- if proxy['params'] -%>
-    <%- proxy['params'].keys.sort.each do |key| -%> <%= key %>=<%= proxy['params'][key] -%>
-    <%- end -%>
-  <%- end -%>
-  <%- if proxy['keywords'] %> <%= proxy['keywords'].join(' ') -%>
-  <%- end %>
-  <%- if not proxy['reverse_cookies'].nil? -%>
-    <%- Array(proxy['reverse_cookies']).each do |reverse_cookies| -%>
-      <%- if reverse_cookies['path'] -%>
-  ProxyPassReverseCookiePath <%= reverse_cookies['path'] %> <%= reverse_cookies['url'] %>
-      <%- end -%>
-      <%- if reverse_cookies['domain'] -%>
-  ProxyPassReverseCookieDomain <%= reverse_cookies['domain'] %> <%= reverse_cookies['url'] %>
-      <%- end -%>
-    <%- end -%>
-  <%- end -%>
-  <%- if proxy['reverse_urls'].nil? -%>
-  ProxyPassReverse <%= proxy['path'] %> <%= proxy['url'] %>
-  <%- else -%>
-    <%- Array(proxy['reverse_urls']).each do |reverse_url| -%>
-  ProxyPassReverse <%= proxy['path'] %> <%= reverse_url %>
-    <%- end -%>
-  <%- end -%>
-  <%- if proxy['setenv'] -%>
-    <%- Array(proxy['setenv']).each do |setenv_var| -%>
-  SetEnv <%= setenv_var %>
-    <%- end -%>
-  <%- end -%>
-<% end -%>
+{%- endif %}
 
-<% [@proxy_pass_match].flatten.compact.each do |proxy| %>
-  <%- Array(proxy['no_proxy_uris']).each do |uri| -%>
-  ProxyPass <%= uri %> !
-  <%- end -%>
-  <%- Array(proxy['no_proxy_uris_match']).each do |uri| -%>
-  ProxyPassMatch <%= uri %> !
-  <%- end -%>
-  ProxyPassMatch <%= proxy['path'] %> <%= proxy['url'] -%>
-  <%- if proxy['params'] -%>
-    <%- proxy['params'].keys.sort.each do |key| -%> <%= key %>=<%= proxy['params'][key] -%>
-    <%- end -%>
-  <%- end -%>
-  <%- if proxy['keywords'] %> <%= proxy['keywords'].join(' ') -%>
-  <%- end %>
-  <%- if proxy['reverse_urls'].nil? -%>
-  ProxyPassReverse <%= proxy['path'] %> <%= proxy['url'] %>
-  <%- else -%>
-    <%- Array(proxy['reverse_urls']).each do |reverse_url| -%>
-  ProxyPassReverse <%= proxy['path'] %> <%= reverse_url %>
-    <%- end -%>
-  <%- end -%>
-  <%- if proxy['setenv'] -%>
-    <%- Array(proxy['setenv']).each do |setenv_var| -%>
-  SetEnv <%= setenv_var %>
-    <%- end -%>
-  <%- end -%>
-<% end -%>
-#}
-
-{% if item['proxy_dest]' -%}
+{% if item['proxy_dest'] is defined -%}
 {%- for uri in item['no_proxy_uris'] -%}
-  ProxyPass        {{ uri }} !
-{% end -%>}
-  ProxyPass        / {{ item['proxy_dest'] }}/
-  ProxyPassReverse / {{ item['proxy_dest'] }}/
-{% endif -%}
-{% if @proxy_dest_match -%}
-{%- for uri in item['no_proxy_uris_match'] -%}
-  ProxyPassMatch   {{ uri }} !
+  ProxyPass         {{ uri }} !
 {% end -%}
-  ProxyPassMatch   / {{ item['proxy_dest_match'] }}/
-  ProxyPassReverse / {{ item['proxy_dest_reverse_match'] }}/
+  ProxyPass         / {{ item['proxy_dest'] }}/
+  ProxyPassReverse  / {{ item['proxy_dest'] }}/
+{% endif -%}
+{% if item['proxy_dest_match'] is defined -%}
+{%- for uri in item['no_proxy_uris_match'] -%}
+  ProxyPassMatch    {{ uri }} !
+{% end -%}
+  ProxyPassMatch    / {{ item['proxy_dest_match'] }}/
+  ProxyPassReverse  / {{ item['proxy_dest_reverse_match'] }}/
 {% endif -%}
