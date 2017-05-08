@@ -7,14 +7,20 @@
   ProxyPreserveHost Off
 {%- endif %}
 
-{% if item['proxy_add_headers'] is defined and item['proxy_add_headers'] == 'On' -%}
+{% if apache_version == '2.4' %}
+  {% if item['proxy_add_headers'] is defined and item['proxy_add_headers'] == 'On' -%}
   ProxyAddHeaders On
-{%- else %}
+  {%- else %}
   ProxyAddHeaders Off
+  {%- endif %}
 {%- endif %}
 
 {% if item['proxy_error_override'] is defined -%}
   ProxyErrorOverride On
+{%- endif %}
+
+{% if item['proxy_pass'] is defined and item['proxy_pass'] | length > 0 -%}
+  {% for dir_statement in directories %}
 {%- endif %}
 
 {% if item['proxy_dest'] is defined -%}
