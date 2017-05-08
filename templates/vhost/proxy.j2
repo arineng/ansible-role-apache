@@ -20,7 +20,18 @@
 {%- endif %}
 
 {% if item['proxy_pass'] is defined and item['proxy_pass'] | length > 0 -%}
-  {% for dir_statement in directories %}
+  {% for pass_statement in proxy_pass %}
+    {% if pass_statement['no_proxy_uris'] and pass_statement['no_proxy_uris'] | length > 0 -%}
+      {% for proxy_uri in pass_statement['no_proxy_uris'] %}
+  ProxyPass {{ proxy_uri }} !
+      {% endif %}
+    {% endif %}
+    {% if pass_statement['no_proxy_uris_match'] and pass_statement['no_proxy_uris_match'] | length > 0 -%}
+      {% for proxy_uri_match in pass_statement['no_proxy_uris_match'] %}
+  ProxyPassMatch {{ proxy_uri_match }} !
+      {% endif %}
+    {% endif %}
+    NEXT STUFF GOES HERE
 {%- endif %}
 
 {% if item['proxy_dest'] is defined -%}
